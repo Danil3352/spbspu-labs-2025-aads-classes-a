@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stack>
+#include <limits>
 namespace
 {
   template< class T, class Cmp >
@@ -211,12 +212,14 @@ int main()
     }
   }
   std::string command = "";
-  while (std::cin >> command)
+  while (!(std::cin >> command).eof())
   {
     int val1 = 0, val2 = 0;
     if (!(std::cin >> val1 >> val2) || (val2 < val1))
     {
-      std::cout << "INVALID COMMAND\n";
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      std::cout << "<INVALID COMMAND>\n";
       continue;
     }
     if (command == "covers")
