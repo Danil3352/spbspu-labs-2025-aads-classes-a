@@ -79,7 +79,7 @@ namespace
     size_t count = 0;
     for (auto it = begin(root); it.hasNext(); it = it.next())
     {
-      if (v1 < it.data().first && v2 > it.data().second)
+      if (v1 <= it.data().first && v2 >= it.data().second)
       {
         count++;
       }
