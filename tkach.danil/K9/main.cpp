@@ -9,9 +9,15 @@ namespace
   };
 
   template< class T, class Cmp >
+  struct TriTreeIterator;
+
+  template< class T, class Cmp >
+  TriTreeIterator< T, Cmp > begin(TriTree< T, Cmp > * root);
+
+  template< class T, class Cmp >
   struct TriTreeIterator {
     using this_t = TriTreeIterator< T, Cmp >;
-  public:
+    friend TriTreeIterator< T, Cmp > begin<>(TriTree< T, Cmp > * root);
     bool hasNext() const
     {
       if (stack.empty() && check_last == 1)
@@ -22,21 +28,22 @@ namespace
     }
     this_t next() const
     {
+      TriTreeIterator< T, Cmp > temp = *this;
       if (stack.empty())
       {
-        return this_t{current, 1, stack};
+        temp.check_last = 1;
+        return temp;
       }
-      std::stack< TriTree< T, Cmp > * > temp = stack;
-      TriTree< T, Cmp > * curr = temp.top();
-      temp.pop();
-      return this_t{curr, 0, temp};
+      temp.current = temp.stack.top();
+      temp.stack.pop();
+      return temp;
     }
 
     std::pair< T, T > & data()
     {
-      return current.data;
+      return current->data;
     }
-  public:
+  private:
     TriTree< T, Cmp > * current;
     int check_last = 0;
     std::stack< TriTree< T, Cmp > * > stack;
@@ -53,7 +60,7 @@ namespace
     size_t count = 0;
     for (auto it = begin(root); it.hasNext(); it = it.next())
     {
-      if (v2 >= it.current->data.first && v1 <= it.current->data.second)
+      if (v2 >= it.data().first && v1 <= it.data().second)
       {
         count++;
       }
@@ -71,7 +78,7 @@ namespace
     size_t count = 0;
     for (auto it = begin(root); it.hasNext(); it = it.next())
     {
-      if (v1 <= it.current->data.first && v2 >= it.current->data.second)
+      if (v1 <= it.data().first && v2 >= it.data().second)
       {
         count++;
       }
@@ -89,7 +96,7 @@ namespace
     size_t count = 0;
     for (auto it = begin(root); it.hasNext(); it = it.next())
     {
-      if (v1 > it.current->data.second || v2 < it.current->data.first)
+      if (v1 > it.data().second || v2 < it.data().first)
       {
         count++;
       }
@@ -231,5 +238,6 @@ int main()
       return 1;
     }
   }
+  clear(root);
   return 0;
 }
