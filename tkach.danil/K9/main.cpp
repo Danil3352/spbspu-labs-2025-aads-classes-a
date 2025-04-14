@@ -52,7 +52,7 @@ namespace
   };
 
   template< class T, class Cmp >
-  size_t intersects(TriTree< T, Cmp >* root, T& v1, T& v2)
+  size_t intersects(TriTree< T, Cmp >* const root, const T& v1, const T& v2)
   {
     if (!root)
     {
@@ -70,7 +70,7 @@ namespace
   }
 
   template< class T, class Cmp >
-  size_t covers(TriTree< T, Cmp >* root, T& v1, T& v2)
+  size_t covers(TriTree< T, Cmp >* const root, const T& v1, const T& v2)
   {
     if (!root)
     {
@@ -79,7 +79,7 @@ namespace
     size_t count = 0;
     for (auto it = begin(root); it.hasNext(); it = it.next())
     {
-      if (v1 <= it.data().first && v2 >= it.data().second)
+      if (v1 < it.data().first && v2 > it.data().second)
       {
         count++;
       }
@@ -88,7 +88,7 @@ namespace
   }
 
   template< class T, class Cmp >
-  size_t avoids(TriTree< T, Cmp >* root, T& v1, T& v2)
+  size_t avoids(TriTree< T, Cmp >* const root, const T& v1, const T& v2)
   {
     if (!root)
     {
@@ -163,7 +163,7 @@ namespace
     }
     else
     {
-      return nullptr;
+      throw std::logic_error("bad pair");
     }
     return root;
   }
@@ -204,6 +204,10 @@ int main()
     {
       root = insertValue(root, std::make_pair(value1, value2), std::less<int>());
     }
+    catch (const std::logic_error&)
+    {
+      continue;
+    }
     catch (const std::bad_alloc&)
     {
       clear(root);
@@ -214,6 +218,12 @@ int main()
   std::string command = "";
   while (!(std::cin >> command).eof())
   {
+    if (command != "covers" && command != "avoids" && command != "intersects")
+    {
+      clear(root);
+      std::cerr << "Error: not this command\n";
+      return 1;
+    }
     int val1 = 0, val2 = 0;
     if (!(std::cin >> val1 >> val2) || (val2 < val1))
     {
@@ -233,12 +243,6 @@ int main()
     else if (command == "intersects")
     {
       std::cout << intersects(root, val1, val2) << "\n";
-    }
-    else
-    {
-      clear(root);
-      std::cerr << "Error: not this command";
-      return 1;
     }
   }
   clear(root);
