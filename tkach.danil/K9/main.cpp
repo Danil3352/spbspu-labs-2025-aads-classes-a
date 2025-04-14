@@ -200,6 +200,10 @@ int main()
       std::cerr << "Wrong input\n";
       return 1;
     }
+    if (value1 > value2)
+    {
+      std::swap(value1, value2);
+    }
     try
     {
       root = insertValue(root, std::make_pair(value1, value2), std::less<int>());
