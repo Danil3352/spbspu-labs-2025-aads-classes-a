@@ -16,40 +16,89 @@ namespace
   TriTreeIterator< T, Cmp > begin(TriTree< T, Cmp > * root);
 
   template< class T, class Cmp >
+  TriTreeIterator< T, Cmp > rbegin(TriTree< T, Cmp > * root);
+
+  template< class T, class Cmp >
   struct TriTreeIterator {
     using this_t = TriTreeIterator< T, Cmp >;
     friend TriTreeIterator< T, Cmp > begin<>(TriTree< T, Cmp > * root);
-    bool hasNext() const
-    {
-      if (stack.empty() && check_last == 1)
-      {
-        return false;
-      }
-      return true;
-    }
-    this_t next() const
-    {
-      TriTreeIterator< T, Cmp > temp = *this;
-      if (stack.empty())
-      {
-        temp.check_last = 1;
-        return temp;
-      }
-      temp.current = temp.stack.top();
-      temp.stack.pop();
-      return temp;
-    }
-
-    std::pair< T, T > & data()
-    {
-      return current->data;
-    }
+    friend TriTreeIterator< T, Cmp > rbegin<>(TriTree< T, Cmp > * root);
+    bool hasNext() const;
+    bool hasPrev() const;
+    this_t next() const;
+    this_t prev() const;
+    std::pair< T, T > & data();
   private:
     TriTree< T, Cmp > * current;
     int check_last = 0;
     std::stack< TriTree< T, Cmp > * > stack;
     TriTree< T, Cmp > * fillStack(TriTree< T, Cmp > * current);
+    TriTree< T, Cmp > * rfillStack(TriTree< T, Cmp > * current);
   };
+
+
+  template< class T, class Cmp >
+  TriTreeIterator< T, Cmp > rbegin(TriTree< T, Cmp > * root)
+  {
+    TriTreeIterator< T, Cmp > temp;
+    temp.current = temp.rfillStack(root);
+    temp.stack.pop();
+    return temp;
+  }
+
+  template< class T, class Cmp >
+  std::pair< T, T > & TriTreeIterator< T, Cmp >::data()
+  {
+    return current->data;
+  }
+
+  template< class T, class Cmp >
+  bool TriTreeIterator< T, Cmp >::hasNext() const
+  {
+    if (stack.empty() && check_last == 1)
+    {
+      return false;
+    }
+    return true;
+  }
+
+  template< class T, class Cmp >
+  bool TriTreeIterator< T, Cmp >::hasPrev() const
+  {
+    if (stack.empty() && check_last == 1)
+    {
+      return false;
+    }
+    return true;
+  }
+
+  template< class T, class Cmp >
+  TriTreeIterator< T, Cmp > TriTreeIterator< T, Cmp >::next() const
+  {
+    TriTreeIterator< T, Cmp > temp = *this;
+    if (stack.empty())
+    {
+      temp.check_last = 1;
+      return temp;
+    }
+    temp.current = temp.stack.top();
+    temp.stack.pop();
+    return temp;
+  }
+  
+  template< class T, class Cmp >
+  TriTreeIterator< T, Cmp > TriTreeIterator< T, Cmp >::prev() const
+  {
+    TriTreeIterator< T, Cmp > temp = *this;
+    if (stack.empty())
+    {
+      temp.check_last = 1;
+      return temp;
+    }
+    temp.current = temp.stack.top();
+    temp.stack.pop();
+    return temp;
+  }
 
   template< class T, class Cmp >
   size_t intersects(TriTree< T, Cmp >* const root, const T& v1, const T& v2)
@@ -77,7 +126,7 @@ namespace
       return 0;
     }
     size_t count = 0;
-    for (auto it = begin(root); it.hasNext(); it = it.next())
+    for (auto it = rbegin(root); it.hasPrev(); it = it.prev())
     {
       if (v1 <= it.data().first && v2 >= it.data().second)
       {
@@ -116,8 +165,21 @@ namespace
     fillStack(current->right);
     fillStack(current->mid);
     fillStack(current->left);
-    TriTree< T, Cmp > * temp = stack.top();
-    return temp;
+    return stack.top();
+  }
+
+  template< class T, class Cmp >
+  TriTree< T, Cmp > * TriTreeIterator< T, Cmp >::rfillStack(TriTree< T, Cmp > * current)
+  {
+    if (current == nullptr)
+    {
+      return nullptr;
+    }
+    stack.push(current);
+    fillStack(current->left);
+    fillStack(current->mid);
+    fillStack(current->right);
+    return stack.top();
   }
 
   template< class T, class Cmp >
