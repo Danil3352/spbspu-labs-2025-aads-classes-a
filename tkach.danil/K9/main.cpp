@@ -85,7 +85,7 @@ namespace
     temp.stack.pop();
     return temp;
   }
-  
+
   template< class T, class Cmp >
   TriTreeIterator< T, Cmp > TriTreeIterator< T, Cmp >::prev() const
   {
