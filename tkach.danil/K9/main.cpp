@@ -176,9 +176,9 @@ namespace
       return nullptr;
     }
     stack.push(current);
-    fillStack(current->left);
-    fillStack(current->mid);
-    fillStack(current->right);
+    rfillStack(current->left);
+    rfillStack(current->mid);
+    rfillStack(current->right);
     return stack.top();
   }
 
