@@ -268,7 +268,7 @@ int main()
     }
     try
     {
-      root = insertValue(root, std::make_pair(value1, value2), std::less<int>());
+      root = insertValue(root, std::make_pair(value1, value2), std::less< int >());
     }
     catch (const std::logic_error&)
     {
